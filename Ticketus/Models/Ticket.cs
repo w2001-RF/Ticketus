@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ticketus.Models
 {
@@ -13,9 +14,16 @@ namespace Ticketus.Models
         public string Description { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.Now;
 
         [Required]
-        public DateTime DateCreated { get; set; }
+        [ForeignKey("Status")]
+        public int StatusId { get; set; }
+        public Status Status { get; set; }
+
+        [Required]
+        [ForeignKey("User")]
+        public int UserId { get; set; }
+        public User User { get; set; }
     }
 }

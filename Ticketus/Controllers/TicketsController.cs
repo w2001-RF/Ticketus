@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Ticketus.Data;
 using Ticketus.DTOs;
@@ -11,6 +13,7 @@ namespace Ticketus.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize]
     public class TicketsController : ControllerBase
     {
         private readonly TicketDbContext _context;
@@ -89,6 +92,15 @@ namespace Ticketus.Controllers
         [HttpPost]
         public async Task<ActionResult<TicketDto>> CreateTicket(TicketCreateDto ticketCreateDto)
         {
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
             var status = await _context.Statuses.FirstOrDefaultAsync(s => s.StatusName == ticketCreateDto.Status);
             if (status == null)
             {
@@ -99,8 +111,8 @@ namespace Ticketus.Controllers
             {
                 Description = ticketCreateDto.Description,
                 StatusId = status.StatusId,
-                UserId = ticketCreateDto.UserId,
-                DateCreated = ticketCreateDto.DateCreated // Use the provided DateCreated
+                UserId = userId,
+                DateCreated = ticketCreateDto.DateCreated
             };
 
             _context.Tickets.Add(ticket);
@@ -121,6 +133,14 @@ namespace Ticketus.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTicket(int id, TicketUpdateDto updateTicketDto)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null)
             {
@@ -135,8 +155,8 @@ namespace Ticketus.Controllers
 
             ticket.Description = updateTicketDto.Description;
             ticket.StatusId = status.StatusId;
-            ticket.UserId = updateTicketDto.UserId;
-            ticket.DateCreated = updateTicketDto.DateCreated; // Optional update to DateCreated
+            ticket.UserId = userId;
+            ticket.DateCreated = updateTicketDto.DateCreated;
 
             _context.Entry(ticket).State = EntityState.Modified;
 

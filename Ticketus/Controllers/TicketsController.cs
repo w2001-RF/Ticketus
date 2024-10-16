@@ -27,9 +27,18 @@ namespace Ticketus.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TicketDto>>> GetTickets([FromQuery] PaginationFilter filter)
         {
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
             var query = _context.Tickets
                 .Include(t => t.Status)
-                .Include(t => t.User)
+                .Where(t => t.UserId == userId)
                 .AsQueryable();
 
             // Apply filtering based on search term (description)

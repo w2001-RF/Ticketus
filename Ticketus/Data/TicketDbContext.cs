@@ -29,15 +29,15 @@ namespace Ticketus.Data
                 new Status { StatusId = 2, StatusName = "Closed" }
             );
 
-            modelBuilder.Entity<User>().HasData(
-                new User { UserId = 1, UserName = "JohnDoe", Email = "john.doe@example.com", DateJoined = DateTime.Now },
-                new User { UserId = 2, UserName = "JaneSmith", Email = "jane.smith@example.com", DateJoined = DateTime.Now }
-            );
+            //modelBuilder.Entity<User>().HasData(
+            //    new User { UserId = 1, UserName = "JohnDoe", Email = "john.doe@example.com", DateJoined = DateTime.Now },
+            //    new User { UserId = 2, UserName = "JaneSmith", Email = "jane.smith@example.com", DateJoined = DateTime.Now }
+            //);
 
-            modelBuilder.Entity<Ticket>().HasData(
-                new Ticket { TicketId = 1, Description = "Fix homepage bug", DateCreated = DateTime.Now, StatusId = 1, UserId = 1 },
-                new Ticket { TicketId = 2, Description = "Update contact page", DateCreated = DateTime.Now, StatusId = 2, UserId = 2 }
-            );
+            //modelBuilder.Entity<Ticket>().HasData(
+            //    new Ticket { TicketId = 1, Description = "Fix homepage bug", DateCreated = DateTime.Now, StatusId = 1, UserId = 1 },
+            //    new Ticket { TicketId = 2, Description = "Update contact page", DateCreated = DateTime.Now, StatusId = 2, UserId = 2 }
+            //);
 
             base.OnModelCreating(modelBuilder);
         }

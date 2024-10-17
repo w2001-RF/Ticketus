@@ -7,6 +7,18 @@ using Ticketus.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularLocalhost",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 // Add JWT Service
 builder.Services.AddScoped<JwtService>();
 
@@ -46,6 +58,8 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+
+app.UseCors("AllowAngularLocalhost");
 
 app.UseAuthentication();
 app.UseAuthorization();

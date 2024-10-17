@@ -61,7 +61,10 @@ namespace Ticketus.Controllers
             }
 
             var token = _jwtService.GenerateJwtToken(user);
-            return Ok(token);
+            return Ok(new
+            { 
+                token= token
+            });
         }
 
         // Utility function to create a password hash and salt

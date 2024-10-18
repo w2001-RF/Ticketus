@@ -19,29 +19,48 @@ namespace Ticketus.Controllers
         private readonly TicketDbContext _context;
 
         public UsersController(TicketDbContext context)
-        {
+        {   
             _context = context;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
-            return await _context.Users.Include(u => u.Tickets).ToListAsync();
+            var users = await _context.Users.ToListAsync();
+
+            // Map users to UserDto
+            var userDtos = users.Select(user => new UserDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Email = user.Email
+            });
+
+            return Ok(userDtos);
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserDto>> GetUser(int id)
         {
-            var user = await _context.Users.Include(u => u.Tickets).FirstOrDefaultAsync(u => u.UserId == id);
+            var user = await _context.Users.FindAsync(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            // Map to UserDto
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Email = user.Email,
+                // Optionally include other relevant properties
+            };
+
+            return Ok(userDto);
         }
 
         // PUT: api/Users/5
@@ -82,7 +101,7 @@ namespace Ticketus.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(UserCreateDto userCreateDto)
+        public async Task<ActionResult<UserDto>> CreateUser(UserCreateDto userCreateDto)
         {
             // Check if the email already exists
             if (await _context.Users.AnyAsync(u => u.Email == userCreateDto.Email))
@@ -103,7 +122,15 @@ namespace Ticketus.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
+            // Return the UserDto
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Email = user.Email,
+            };
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
         }
 
         // DELETE: api/Users/5

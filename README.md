@@ -14,19 +14,16 @@ This is the backend API for the Ticketus web application built using .NET 8. The
    ```bash
    git clone https://github.com/w2001-RF/Ticketus.git
    cd ticketus-backend
-
 2. **Restore Dependencies**
  ```bash
    dotnet restore
-
 3. **Configure Database**
    - Update the connection string in `appsettings.json` to match your SQL Server setup:
-   ```json
-   {
+   `{
        "ConnectionStrings": {
            "DefaultConnection": "Server=your_server;Database=your_database;User Id=your_user;Password=your_password;"
        }
-   }
+   }`
 
 4. **Run Migrations**
  ```bash
